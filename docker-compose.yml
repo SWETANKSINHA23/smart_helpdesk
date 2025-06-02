@@ -1,0 +1,47 @@
+
+
+services:
+  mongo:
+    image: mongo:latest
+    container_name: helpdesk_mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  api:
+    build:
+      context: ./Smart-HelpDesk-server
+      dockerfile: Dockerfile
+    container_name: helpdesk_api
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./Smart-HelpDesk-server:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/helpdesk
+      - JWT_SECRET=your_secure_random_key
+      - AUTO_CLOSE_ENABLED=true
+      - CONFIDENCE_THRESHOLD=0.78
+      - STUB_MODE=true
+    depends_on:
+      - mongo
+
+  client:
+    build:
+      context: ./Smart-HelpDesk-client
+      dockerfile: Dockerfile
+    container_name: helpdesk_client
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./Smart-HelpDesk-client:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:5000
+    depends_on:
+      - api
+
+volumes:
+  mongo_data:

@@ -1,0 +1,30 @@
+# Node dependencies
+node_modules/
+Smart-HelpDesk-server/node_modules/
+Smart-HelpDesk-client/node_modules/
+
+# Build output
+dist/
+dist-ssr/
+build/
+
+# Environment variables - NEVER commit secrets
+Smart-HelpDesk-server/.env
+Smart-HelpDesk-client/.env
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor / OS files
+.vscode/
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+Thumbs.db
