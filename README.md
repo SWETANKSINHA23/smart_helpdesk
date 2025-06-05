@@ -1,4 +1,4 @@
-# smart helpdesk 🤖
+# smart helpdesk
 
 > An intelligent, full-stack support ticket system powered by an **agentic triage workflow** that automatically classifies, drafts replies, and resolves tickets — or escalates them to a human agent.
 
@@ -10,7 +10,7 @@
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Overview](#overview)
 - [Features](#features)
@@ -26,7 +26,7 @@
 - [Environment Variables](#environment-variables)
 - [API Reference](#api-reference)
 - [User Roles](#user-roles)
-- [Screenshots](#screenshots)
+- [License](#license)
 
 ---
 
@@ -47,15 +47,15 @@ Every action is logged to an immutable **Audit Trail** with a consistent `traceI
 
 | Feature | Description |
 |---------|-------------|
-| 🔐 **Authentication & RBAC** | JWT-based login/register with role-based access control (Admin, Agent, User) |
-| 🎫 **Ticket Lifecycle** | Full ticket management — open → triaged → waiting_human → resolved |
-| 🤖 **Agentic Triage** | Autonomous background agent that classifies, retrieves KB, drafts replies |
-| 📚 **Knowledge Base** | Admin CRUD for KB articles with tag-based search |
-| 🧑‍💼 **Agent Review** | Agents can review AI suggestions and manually resolve tickets |
-| 📋 **Audit Timeline** | Every triage step logged with timestamp, actor, and metadata |
-| ⚙️ **Admin Config** | Admin can toggle auto-close and set confidence threshold at runtime |
-| 🐳 **Docker Support** | Full containerized setup with Docker Compose (mongo + api + client) |
-| 📱 **Responsive UI** | Mobile-friendly Bootstrap 5 interface |
+| **Authentication & RBAC** | JWT-based login/register with role-based access control (Admin, Agent, User) |
+| **Ticket Lifecycle** | Full ticket management — open, triaged, waiting_human, resolved |
+| **Agentic Triage** | Autonomous background agent that classifies, retrieves KB, drafts replies |
+| **Knowledge Base** | Admin CRUD for KB articles with tag-based search |
+| **Agent Review** | Agents can review AI suggestions and manually resolve tickets |
+| **Audit Timeline** | Every triage step logged with timestamp, actor, and metadata |
+| **Admin Config** | Admin can toggle auto-close and set confidence threshold at runtime |
+| **Docker Support** | Full containerized setup with Docker Compose (mongo + api + client) |
+| **Responsive UI** | Mobile-friendly Bootstrap 5 interface |
 
 ---
 
@@ -93,25 +93,25 @@ Every action is logged to an immutable **Audit Trail** with a consistent `traceI
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    Docker Compose                        │
-│                                                          │
-│  ┌──────────────┐    ┌──────────────┐   ┌────────────┐ │
-│  │   Client      │    │     API      │   │   MongoDB  │ │
-│  │  (React/Vite) │───▶│  (Express)   │──▶│  :27017   │ │
-│  │   :3000       │    │  :5000       │   └────────────┘ │
-│  └──────────────┘    └──────┬───────┘                   │
-│                             │                            │
-│                    ┌────────▼────────┐                   │
-│                    │  Agent Service  │                   │
-│                    │  (In-memory Q)  │                   │
-│                    └────────┬────────┘                   │
-│                             │                            │
-│                    ┌────────▼────────┐                   │
-│                    │  LLM Provider   │                   │
-│                    │  (Stub / Real)  │                   │
-│                    └─────────────────┘                   │
-└─────────────────────────────────────────────────────────┘
++-----------------------------------------------------------+
+|                    Docker Compose                         |
+|                                                           |
+|  +--------------+    +--------------+   +------------+    |
+|  |   Client     |    |     API      |   |   MongoDB  |    |
+|  | (React/Vite) |--->|  (Express)   |-->|  :27017   |    |
+|  |   :3000      |    |  :5000       |   +------------+    |
+|  +--------------+    +------+-------+                     |
+|                             |                             |
+|                    +--------v--------+                    |
+|                    |  Agent Service  |                    |
+|                    |  (In-memory Q)  |                    |
+|                    +--------+--------+                    |
+|                             |                             |
+|                    +--------v--------+                    |
+|                    |  LLM Provider   |                    |
+|                    |  (Stub / Real)  |                    |
+|                    +-----------------+                    |
++-----------------------------------------------------------+
 ```
 
 The API responds **instantly** to ticket creation, while the triage agent runs **asynchronously** in the background via an in-memory queue.
@@ -124,38 +124,38 @@ When a ticket is created, the following sequential pipeline is triggered automat
 
 ```
 New Ticket Created
-       │
-       ▼
- ┌─────────────┐     Logs: AGENT_TRIAGE_STARTED
- │  1. CLASSIFY │────────────────────────────────▶ AuditLog
- │  (keyword    │     category + confidence score
- │   matching)  │
- └──────┬──────┘
-        │
-        ▼
- ┌─────────────┐     Logs: KB_RETRIEVED
- │ 2. RETRIEVE │────────────────────────────────▶ AuditLog
- │    KB        │     top 3 matching articles
- └──────┬──────┘
-        │
-        ▼
- ┌─────────────┐     Logs: DRAFT_GENERATED
- │ 3. DRAFT    │────────────────────────────────▶ AuditLog
- │   REPLY     │     templated reply with KB refs
- └──────┬──────┘
-        │
-        ▼
- ┌─────────────┐
- │ 4. DECIDE   │
- └──────┬──────┘
-        │
-   ┌────┴────────────────┐
-   │                     │
-confidence ≥ threshold   confidence < threshold
-   │                     │
-   ▼                     ▼
-AUTO_CLOSED         ASSIGNED_TO_HUMAN
-status: resolved    status: waiting_human
+       |
+       v
+ +-------------+     Logs: AGENT_TRIAGE_STARTED
+ |  1. CLASSIFY |---------------------------------> AuditLog
+ |  (keyword   |     category + confidence score
+ |  matching)  |
+ +------+------+
+        |
+        v
+ +-------------+     Logs: KB_RETRIEVED
+ | 2. RETRIEVE |---------------------------------> AuditLog
+ |    KB       |     top 3 matching articles
+ +------+------+
+        |
+        v
+ +-------------+     Logs: DRAFT_GENERATED
+ | 3. DRAFT   |---------------------------------> AuditLog
+ |   REPLY    |     templated reply with KB refs
+ +------+------+
+        |
+        v
+ +-------------+
+ | 4. DECIDE  |
+ +------+------+
+        |
+   +----+--------------------+
+   |                         |
+confidence >= threshold   confidence < threshold
+   |                         |
+   v                         v
+AUTO_CLOSED           ASSIGNED_TO_HUMAN
+status: resolved      status: waiting_human
 ```
 
 **Classification Categories:**
@@ -323,32 +323,32 @@ VITE_API_URL=http://localhost:5000/api
 ### Auth
 | Method | Endpoint | Auth | Description |
 |--------|---------|------|-------------|
-| `POST` | `/api/auth/register` | ❌ | Register a new user |
-| `POST` | `/api/auth/login` | ❌ | Login and receive JWT |
-| `GET` | `/api/auth/me` | ✅ | Get current user profile |
+| `POST` | `/api/auth/register` | No | Register a new user |
+| `POST` | `/api/auth/login` | No | Login and receive JWT |
+| `GET` | `/api/auth/me` | Yes | Get current user profile |
 
 ### Tickets
 | Method | Endpoint | Auth | Description |
 |--------|---------|------|-------------|
-| `GET` | `/api/tickets` | ✅ | List tickets (filtered by role) |
-| `POST` | `/api/tickets` | ✅ | Create ticket → triggers triage |
-| `GET` | `/api/tickets/:id` | ✅ | Get ticket details |
+| `GET` | `/api/tickets` | Yes | List tickets (filtered by role) |
+| `POST` | `/api/tickets` | Yes | Create ticket, triggers triage |
+| `GET` | `/api/tickets/:id` | Yes | Get ticket details |
 | `POST` | `/api/tickets/:id/reply` | Agent/Admin | Add manual reply |
-| `GET` | `/api/tickets/:id/audit` | ✅ | Get audit log for a ticket |
+| `GET` | `/api/tickets/:id/audit` | Yes | Get audit log for a ticket |
 
 ### Knowledge Base
 | Method | Endpoint | Auth | Description |
 |--------|---------|------|-------------|
-| `GET` | `/api/kb?query=` | ❌ | Search articles |
+| `GET` | `/api/kb?query=` | No | Search articles |
 | `POST` | `/api/kb` | Admin | Create new article |
-| `GET` | `/api/kb/:id` | ❌ | Get article by ID |
+| `GET` | `/api/kb/:id` | No | Get article by ID |
 | `PUT` | `/api/kb/:id` | Admin | Update article |
 | `DELETE` | `/api/kb/:id` | Admin | Delete article |
 
 ### Agent & Config
 | Method | Endpoint | Auth | Description |
 |--------|---------|------|-------------|
-| `GET` | `/api/agent/suggestion/:ticketId` | ✅ | Get AI suggestion for a ticket |
+| `GET` | `/api/agent/suggestion/:ticketId` | Yes | Get AI suggestion for a ticket |
 | `GET` | `/api/config` | Admin | Get system config |
 | `PUT` | `/api/config` | Admin | Update system config |
 
@@ -371,5 +371,5 @@ This project is licensed under the **MIT License**.
 ---
 
 <div align="center">
-  <p>Built with ❤️ by <a href="https://github.com/SWETANKSINHA23">SWETANKSINHA23</a></p>
+  <p>Built by <a href="https://github.com/SWETANKSINHA23">SWETANKSINHA23</a></p>
 </div>
