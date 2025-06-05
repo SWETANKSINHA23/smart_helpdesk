@@ -6,7 +6,6 @@
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?logo=mongodb&logoColor=white)](https://mongodb.com)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://docker.com)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
 
@@ -26,7 +25,6 @@
 - [Environment Variables](#environment-variables)
 - [API Reference](#api-reference)
 - [User Roles](#user-roles)
-- [License](#license)
 
 ---
 
@@ -361,15 +359,3 @@ VITE_API_URL=http://localhost:5000/api
 | **User** | Create tickets, view own tickets, view ticket details |
 | **Agent** | View all tickets, add replies, resolve tickets |
 | **Admin** | All agent permissions + manage KB articles + manage system config |
-
----
-
-## License
-
-This project is licensed under the **MIT License**.
-
----
-
-<div align="center">
-  <p>Built by <a href="https://github.com/SWETANKSINHA23">SWETANKSINHA23</a></p>
-</div>
